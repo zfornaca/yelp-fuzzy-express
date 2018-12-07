@@ -8,10 +8,6 @@ const yelpUrl = 'https://api.yelp.com/v3/businesses/search';
 
 const config = {
   headers: { Authorization: 'Bearer ' + TOKEN }
-  // params: {
-  //   term: 'bulgoki',
-  //   location: 'Oakland'
-  // }
 };
 
 app.use(cors());
@@ -20,20 +16,8 @@ app.get('/', function(req, res) {
   const terms = req.query.terms.split(',');
   const location = req.query.location;
   getResults(terms, location).then(collated => {
-    // console.log(res);
     res.send(collated);
   });
-  // console.log(realData);
-
-  // res.send(getResults(terms, location));
-  // const dummyData = {
-  //   businesses: [
-  //     { name: 'bob', id: 'bobid', url: 'boburl', image_url: 'bobimg' }
-  //   ]
-  // };
-  // console.log(dummyData);
-  // console.log(realData);
-  // res.send(dummyData);
 });
 
 const getResults = async (terms, location) => {
@@ -70,9 +54,6 @@ const getResults = async (terms, location) => {
     }
   }
 
-  // for (let id in collated) {
-  //   console.log(collated[id]['name']);
-  // }
   return collated;
 };
 
