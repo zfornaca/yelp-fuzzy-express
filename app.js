@@ -19,29 +19,21 @@ app.use(cors());
 app.get('/', function(req, res) {
   const terms = req.query.terms.split(',');
   const location = req.query.location;
-  const realData = getResults(terms, location);
-  const collated = new Map();
-  let length = realData.reduce(function(length, elem) {
-    return Math.max(length, elem.length);
-  }, 0);
-  for (let i = 0; i < length; i++) {
-    // for each subarray, process subarray[i]
-    // processing rules:
-    // if subarray[i] is undefined, do nothing
-    // if Map already has id as key, do nothing
-    // if Map does not already have key, add:
-    // id: {name, url, image_url}
-  }
+  getResults(terms, location).then(collated => {
+    // console.log(res);
+    res.send(collated);
+  });
+  // console.log(realData);
 
   // res.send(getResults(terms, location));
-  const dummyData = {
-    businesses: [
-      { name: 'bob', id: 'bobid', url: 'boburl', image_url: 'bobimg' }
-    ]
-  };
+  // const dummyData = {
+  //   businesses: [
+  //     { name: 'bob', id: 'bobid', url: 'boburl', image_url: 'bobimg' }
+  //   ]
+  // };
   // console.log(dummyData);
   // console.log(realData);
-  res.send(dummyData);
+  // res.send(dummyData);
 });
 
 const getResults = async (terms, location) => {
@@ -52,46 +44,37 @@ const getResults = async (terms, location) => {
         headers: { Authorization: 'Bearer ' + TOKEN },
         params: {
           term,
-          location
+          location,
+          limit: 5
         }
       };
       const result = await axios.get(yelpUrl, config);
-      // console.log(result);
       results[term] = result.data.businesses;
     })
   );
-  console.log(results);
-  // let results = await axios.get([axios.get(yelpUrl)]);
+
+  // get length of longest array of businesses
+  const length = Object.values(results).reduce((len, subArr) => {
+    return Math.max(len, subArr.length);
+  }, 0);
+
+  const collated = {};
+
+  for (let i = 0; i < length; i++) {
+    for (let term in results) {
+      const currentBiz = results[term][i];
+      if (typeof currentBiz !== 'undefined') {
+        const id = currentBiz['id'];
+        if (typeof collated[id] === 'undefined') collated[id] = currentBiz;
+      }
+    }
+  }
+
+  // for (let id in collated) {
+  //   console.log(collated[id]['name']);
+  // }
+  return collated;
 };
-
-// app.get('/', function(req, res) {
-//   let promises = [];
-//   let allRes = {};
-//   for (let term in req.query.terms.split(',')) {
-//     const params = {
-//       term,
-//       location: req.query.location
-//     };
-//     config.params = params;
-//     promises.push(
-//       axios.get(yelpUrl, config).then(oneRes => {
-//         allRes.term = oneRes.data;
-//       })
-//     );
-//   }
-//   console.log(promises);
-//   axios.all(promises).then(console.log(allRes));
-// });
-
-////////////////
-
-// how to send multiple axios requests
-//   config.params = params;
-//   axios.get(yelpUrl, config).then(yres => {
-//     console.log(yres.data.total);
-//     res.send(yres.data);
-//   });
-// });
 
 app.listen(3001, function() {
   console.log('Express server started on port 3001');
