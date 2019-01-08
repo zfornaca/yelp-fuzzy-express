@@ -15,47 +15,51 @@ app.use(cors());
 app.get('/', function(req, res) {
   const terms = req.query.terms.split(',');
   const location = req.query.location;
-  getResults(terms, location).then(collated => {
-    res.send(collated);
-  });
-});
 
-const getResults = async (terms, location) => {
-  const results = {};
-  await Promise.all(
-    terms.map(async term => {
+  console.log(terms);
+
+  Promise.all(
+    terms.map(term => {
       const config = {
         headers: { Authorization: 'Bearer ' + TOKEN },
         params: {
           term,
-          location,
+          location: location || 'Oakland',
           limit: 5
         }
       };
-      const result = await axios.get(yelpUrl, config);
-      results[term] = result.data.businesses;
+      return axios.get(yelpUrl, config);
     })
-  );
+  )
+    .then(results => {
+      console.log('Zezults: ', results);
 
+      const collated = collateData(results);
+      res.send(collated);
+    })
+    .catch(error => console.log('Zerror: ', error));
+});
+
+function collateData(results) {
   // get length of longest array of businesses
-  const length = Object.values(results).reduce((len, subArr) => {
-    return Math.max(len, subArr.length);
+  const length = results.reduce((len, result) => {
+    return Math.max(len, result.data.businesses.length);
   }, 0);
 
   const collated = {};
 
   for (let i = 0; i < length; i++) {
     for (let term in results) {
-      const currentBiz = results[term][i];
+      const currentBiz = results[term].data.businesses[i];
       if (typeof currentBiz !== 'undefined') {
         const id = currentBiz['id'];
         if (typeof collated[id] === 'undefined') collated[id] = currentBiz;
       }
     }
   }
-
+  console.log(collated);
   return collated;
-};
+}
 
 app.listen(3001, function() {
   console.log('Express server started on port 3001');
