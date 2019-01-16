@@ -25,7 +25,7 @@ app.get('/', function(req, res) {
         params: {
           term,
           location: location || 'Oakland',
-          limit: 5
+          limit: 20
         }
       };
       return axios.get(yelpUrl, config);
