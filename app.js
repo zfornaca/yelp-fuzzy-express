@@ -25,14 +25,14 @@ app.get('/', function(req, res) {
         params: {
           term,
           location: location || 'Oakland',
-          limit: 20
+          limit: 10
         }
       };
       return axios.get(yelpUrl, config);
     })
   )
     .then(results => {
-      console.log('Zezults: ', results);
+      // console.log('Zezults: ', results[0].request);
 
       const collated = collateData(results);
       res.send(collated);
@@ -48,12 +48,22 @@ function collateData(results) {
 
   const collated = {};
 
+  // for each business in each search result, add it to collated results
+  // if not already present, with the Yelp business ID as the key. Add a
+  // 'terms' key to each business with an array of all terms that had that
+  // business among the results.
   for (let i = 0; i < length; i++) {
-    for (let term in results) {
-      const currentBiz = results[term].data.businesses[i];
+    for (let result in results) {
+      const currentBiz = results[result].data.businesses[i];
       if (typeof currentBiz !== 'undefined') {
         const id = currentBiz['id'];
-        if (typeof collated[id] === 'undefined') collated[id] = currentBiz;
+        console.log(results[result].config.params.term);
+        if (typeof collated[id] === 'undefined') {
+          collated[id] = currentBiz;
+          collated[id].terms = [results[result].config.params.term];
+        } else {
+          collated[id].terms.push(results[result].config.params.term);
+        }
       }
     }
   }
