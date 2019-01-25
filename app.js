@@ -2,11 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const axios = require('axios');
-const TOKEN = require('./token.js');
 
 const yelpUrl = 'https://api.yelp.com/v3/businesses/search';
 const serverPort = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 const serverIP = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+const TOKEN = process.env.YELPAPI;
 
 const config = {
   headers: { Authorization: 'Bearer ' + TOKEN }
