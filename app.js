@@ -4,10 +4,8 @@ const app = express();
 const axios = require('axios');
 
 const yelpUrl = 'https://api.yelp.com/v3/businesses/search';
-const serverPort = process.env.OPENSHIFT_NODEJS_PORT;
-//  || 8080;
-const serverIP = process.env.OPENSHIFT_NODEJS_IP;
-// || '127.0.0.1';
+var ip = process.env.IP || '0.0.0.0';
+var port = process.env.PORT || 8080;
 const TOKEN = process.env.YELPAPI;
 
 const config = {
@@ -75,8 +73,6 @@ function collateData(results) {
   return collated;
 }
 
-app.listen(serverPort, serverIP, function() {
-  console.log(
-    `Express server listening on ${serverIP}, server port ${serverPort}`
-  );
+app.listen(port, ip, function() {
+  console.log(`Express server listening on ${ip}, server port ${port}`);
 });
