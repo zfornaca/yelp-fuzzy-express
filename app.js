@@ -5,6 +5,8 @@ const axios = require('axios');
 const TOKEN = require('./token.js');
 
 const yelpUrl = 'https://api.yelp.com/v3/businesses/search';
+const serverPort = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+const serverIP = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
 
 const config = {
   headers: { Authorization: 'Bearer ' + TOKEN }
@@ -71,6 +73,8 @@ function collateData(results) {
   return collated;
 }
 
-app.listen(3001, function() {
-  console.log('Express server started on port 3001');
+app.listen(serverPort, serverIP, function() {
+  console.log(
+    `Express server listening on ${serverIP}, server port ${serverPort}`
+  );
 });
