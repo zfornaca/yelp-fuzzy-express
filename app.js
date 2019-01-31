@@ -12,7 +12,11 @@ const config = {
   headers: { Authorization: 'Bearer ' + TOKEN }
 };
 
-app.use(cors());
+const corsOptions = {
+  origin: 'https://zackfornaca.com/mysc/'
+};
+
+app.use(cors(corsOptions));
 
 app.get('/', function(req, res) {
   const terms = req.query.terms.split(',');
