@@ -13,7 +13,7 @@ const config = {
 };
 
 const corsOptions = {
-  origin: 'https://zackfornaca.com/mysc/'
+  origin: 'https://zackfornaca.com'
 };
 
 app.use(cors(corsOptions));
