@@ -16,8 +16,8 @@ const corsOptions = {
   origin: 'https://zackfornaca.com'
 };
 
-// app.use(cors(corsOptions));
-app.use(cors());
+app.use(cors(corsOptions));
+// app.use(cors());
 
 app.get('/', function(req, res) {
   const terms = req.query.terms.split(',');
